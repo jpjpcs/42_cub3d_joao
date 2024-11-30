@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 11:45:17 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/29 17:20:51 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/11/30 19:05:58 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ typedef struct s_game
     t_map map; // The Map of the game: map structure. Contains the map data and its dimensions (width and height).
     int map_started; // Flag to check if we have reached the map content. If the map has started.
     char **tokens_params; // Array with the splited map parameters.
+    char *tmp_map_grid; // Temporary map grid to store the map data before it´s copied to the map structure.
     // Players properties
     t_player player; // Player´s information: position, direction, etc
     
@@ -134,11 +135,9 @@ typedef struct s_game
 //void load_textures(t_game *game);
 
 //Parser
-void parse_check_file(int argc, char *file_name);
-void parse_check_map(char *file_name);
-void load_map(t_game *game, char *file);
-int validate_map(t_game *game);
-int validate_config(t_game *game);
+void tokenizer (t_game *game, char *file);
+void lexer(t_game *game);
+void parse_check_map(t_game *game, char *file);
 
 //Init
 void setup_game(t_game *game);
@@ -164,11 +163,9 @@ void draw_textures(t_game *game);
 
 //Cleanup - exit/error
 void exit_error (t_game *game, char *msg);
-void exit_game(t_game *game);
+int	exit_game(t_game *game, char *msg);
 int	exit_esc(t_game *game);
 void	free_game(t_game *game);
-void free_map(t_game *game);
-int print_error(const char *msg);
 
 // ------------ Error Handling ------------
 int error_exit(const char *msg);

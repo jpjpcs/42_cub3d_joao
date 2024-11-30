@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 16:01:22 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/29 17:20:43 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/11/30 19:12:53 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ static void	free_textures(t_game *game)
 
     i = -1;
     while(++i <= 4)
-		if (game->img[i].img)
-        	mlx_destroy_image(game->mlx, game->texture[i].img);
+		if (game->textures[i].img)
+        	mlx_destroy_image(game->mlx, game->textures[i].img);
 	/* if (game->img_walls.img)
 		mlx_destroy_image(game->mlx, game->img_walls.img);
 	if (game->img_space.img)
@@ -47,31 +47,6 @@ void free_map_and_tokens(t_game *game)
     int i;
 
     i = 0;
-    while (i < game->map.rows)
-    {
-        free(game->map.grid[i]);
-        i++;
-    }
-    free(game->map.grid);
-	
-	i = 0;
-	while (game->params_tokens[i])
-	{
-		free(game->params_tokens[i]);
-		i++;
-	}
-	free(game->params_tokens);
-
-	game->map.grid = NULL;
-	game->params_tokens = NULL;
-}
-
-void free_map_and_tokens(t_game *game)
-{
-    int i;
-
-    i = 0;
-    
 	if (game->map.grid)
 	{
 		while (game->map.grid[i])
@@ -98,7 +73,7 @@ void	free_game(t_game *game)
 			mlx_destroy_window(game->mlx, game->win);
 		if (game->mlx)
 		{
-			mlx_destroy_display(game->mlx);
+			//mlx_destroy_display(game->mlx);
 			free(game->mlx);
 		}
 	}
@@ -118,9 +93,9 @@ int	exit_game(t_game *game, char *msg)
 	exit(EXIT_SUCCESS);
 }
 
-int	exit_error(t_game *game, char *msg)
+void	exit_error(t_game *game, char *msg)
 {
-	ft_putendl_fd("Error", 2);
+	ft_putendl_fd("\nError", 2);
 	ft_putendl_fd(msg, 2);
 	free_game(game);
 	exit(EXIT_FAILURE);

@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 01:35:22 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/29 01:35:31 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/11/30 16:34:41 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ char    *ft_strchr_any(const char *s, const char *chars)
         return (NULL);
     while (*s)
     {
-        if (*s != ' ' && ft_strchr(chars, *s)) // Ignora espaços e verifica os caracteres válidos
+        if (ft_strchr(chars, *s))
             return ((char *)s);
         s++;
     }

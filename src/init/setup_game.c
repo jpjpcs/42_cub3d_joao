@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   setup_game.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jode-jes <jode-jes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:57:27 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/22 12:40:07 by jode-jes         ###   ########.fr       */
+/*   Updated: 2024/11/30 18:23:15 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void setup_game(t_game *game)
     game->screen_width = SCREEN_WIDTH;
     game->screen_height = SCREEN_HEIGHT;
     
-    game->player.current_pos.pos_x = 2.0; // Posição inicial do jogador no eixo X
-    game->player.current_pos.pos_y = 2.0; // Posição inicial do jogador no eixo Y
+    game->player.x = 2.0; // Posição inicial do jogador no eixo X
+    game->player.y = 2.0; // Posição inicial do jogador no eixo Y
     game->player.dir_x = -1.0; // Direção inicial no eixo X
     game->player.dir_y = 0.0; // Direção inicial no eixo Y
     game->player.plane_x = 0.0; // Plano de câmera X

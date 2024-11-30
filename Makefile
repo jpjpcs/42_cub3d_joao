@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jode-jes <jode-jes@student.42.fr>          +#+  +:+       +#+         #
+#    By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/23 20:32:02 by joaosilva         #+#    #+#              #
-#    Updated: 2024/11/21 17:46:13 by jode-jes         ###   ########.fr        #
+#    Updated: 2024/11/30 19:08:28 by joaosilva        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,9 +21,9 @@ INCLUDE = -I cub3d/include
 
 ############  Source files - Sources to objects ###########
 SRC_FILES = main.c init/setup_game.c init/setup_textures.c init/setup_mlx.c \
-parser/checkers.c parser/map_loader.c parser/validation.c \
+parser/tokenizer.c parser/lexer.c parser/check_map.c \
 movement/movement_utils.c movement/player_input.c movement/rotation.c \
-exit_error/exit_free_game.c exit_error/print_error.c \
+exit_error/exit_free_game.c \
 rendering/draw.c rendering/raycasting.c rendering/textures.c
 SRC_DIR = src/
 SRC = ${addprefix ${SRC_DIR}, ${SRC_FILES}}

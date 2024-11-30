@@ -1,33 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map_check_load.c                                   :+:      :+:    :+:   */
+/*   check_map.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:55:55 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/30 12:01:38 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/11/30 18:58:57 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
 
-int	check_walls_floodfill(t_game *game, char **map, const int x, const int y)
+int	check_map_walls_floodfill(t_game *game, const int x, const int y)
 {
 	if (x < 0 || y < 0 || y >= game->map.rows
-		|| x >= (int)ft_strlen(map[y]) || map[y][x] == 32)
+		|| x >= (int)ft_strlen(game->map.grid[y]) || game->map.grid[y][x] == 32)
 	{
 		printf("Invalid Map(Not Wall Closed)\n");
-		free_double_pointer_array(map);
-		ft_quit_game(game);
+		//free_double_pointer_array(map);
+		//ft_quit_game(game);
 	}
-	if (map[y][x] == '1')
+	if (game->map.grid[y][x] == '1')
 		return (1);
-	map[y][x] = '1';
-	check_walls_floodfill(game, map, x + 1, y);
-	check_walls_floodfill(game, map, x - 1, y);
-	check_walls_floodfill(game, map, x, y + 1);
-	check_walls_floodfill(game, map, x, y - 1);
+	game->map.grid[y][x] = '1';
+	check_map_walls_floodfill(game, x + 1, y);
+	check_map_walls_floodfill(game, x - 1, y);
+	check_map_walls_floodfill(game, x, y + 1);
+	check_map_walls_floodfill(game, x, y - 1);
 	return (0);
 }
 
@@ -70,7 +70,6 @@ int check_map_characters (const char *line)
 
 void parse_check_map(t_game *game, char *file)
 {
-    char	**grid;
     int valid_map;
 	int		i;
 
@@ -78,7 +77,7 @@ void parse_check_map(t_game *game, char *file)
    
     check_map_characters (file);
     set_spawn (game, file);
-	valid_map = check_map_walls_floodfill (game, grid, game->player.y, game->player.x);
+	valid_map = check_map_walls_floodfill (game, game->player.y, game->player.x);
     if (valid_map)
         exit_error(game, "Error\nInvalid map.\n");
 }

@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:56:06 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/30 11:34:50 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/11/30 19:18:30 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,19 +72,26 @@ the map has started.
 3. If the map has started, add the line to the map (map.grid).
 4. If the map hasn't started, add the line to the tokens_params.
 */
-void process_line(t_game *game, char *line, int *params_index, int *map_index)
+void process_line(t_game *game, char *line, int *params_index)
 {
-    if (!game->map_started && is_line_empty(line))
+    char * new_line;
+    char * old_map_grid;
+    
+    new_line = ft_strtrim(line, " ");
+    if (!game->map_started && is_line_empty(new_line))
         return;
 
-    if (!game->map_started && ft_strchr_any(line, "10NSWE"))
+    if (!game->map_started && ft_strchr_any(new_line, "10"))
         game->map_started = 1;
-
+    old_map_grid = game->tmp_map_grid;
     if (game->map_started)
-        game->map.grid[(*map_index)++] = ft_strdup(line);
+    {
+        game->tmp_map_grid = ft_strjoin(old_map_grid, line);
+        free(old_map_grid);
+        game->map.rows++;    
+    }
     else
-        game->tokens_params[(*params_index)++] = trim_spaces(ft_strdup(line));
-        
+        game->tokens_params[(*params_index)++] = strdup(trim_spaces(line));     
 }
 
 /*
@@ -102,28 +109,31 @@ just return if the line is empty.
 */
 void split_file(t_game *game, char *file)
 {
-    int fd = open(file, O_RDONLY);
+    int fd;
     char *line;
     int params_index;
-    int map_index;
 
     params_index = 0;
-    map_index = 0;
+    game->tmp_map_grid = NULL;
+    fd = open(file, O_RDONLY);
     if (fd == -1)
         exit_error(game, "Couldn't open requested file.");
-    game->map.grid = ft_calloc(game->map.rows + 1, sizeof(char *));
-    game->tokens_params[6] = NULL;
-    if (!game->map.grid)
-        exit_error(NULL, "Couldn't allocate memory.");
+    for (int i = 0; i < 6; i++)
+        game->tokens_params[i] = NULL;
     while ((line = get_next_line(fd)))
     {
-        process_line(game, line, &params_index, &map_index);
+        process_line(game, line, &params_index);
         free(line);
     }
+    game->map.grid = ft_split(game->tmp_map_grid, '\n');
+    free(game->tmp_map_grid);
+    if (!game->map.grid)
+        exit_error(game, "Error\nFailed to allocate memory for map.\n");
     close(fd);
     if (!game->map_started)
-        exit_error(NULL, "Error\nMap is missing or invalid.\n");
+        exit_error(game, "Error\nMap not found.\n");
 }
+
 /*
 Tokenizer (What it does - separates in tokens, 
 that are smaller parts of the file):
@@ -135,6 +145,7 @@ that are smaller parts of the file):
 3. Deliver the tokens_params "cleaned" to 
     the lexer_assign and the map_grid "cleaned" 
     to the map_check_load.
+4. It checks if the number of parameters is valid.
 */
 void tokenizer (t_game *game, char *file)
 {
@@ -144,8 +155,6 @@ void tokenizer (t_game *game, char *file)
     num_params = 0;
     count = 0;
     split_file(game, file);
-    remove_inside_spaces(game->tokens_params);
-
     while (game->tokens_params[num_params++])  
         count++;
     if (count != 6)

@@ -6,12 +6,13 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 12:08:01 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/30 11:22:51 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/11/30 19:26:39 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cub3d.h"
 
+/* 
 // game loops - raycasting loop and game loop.
 void cub3d(t_game *game, char *file)
 {   
@@ -23,16 +24,16 @@ void cub3d(t_game *game, char *file)
     mlx_loop(game->mlx);
 }
 
-/* 
-Instead of ft_bzero(game, sizeof(t_game)); 
-I could also use memset or calloc or just game = (t_game){0};
-*/
+
+//Instead of ft_bzero(game, sizeof(t_game)); 
+//I could also use memset or calloc or just game = (t_game){0};
 static void	init_game(t_game *game)
 { 
     setup_game(game);
     setup_mlx(game);
     setup_textures(game);
-}
+} 
+*/
 
 /* 
 It checks all in one in the same function:
@@ -42,28 +43,33 @@ It checks all in one in the same function:
 4. check_file_open
 5. check_empty_file
 */
-void parse_check_file(int argc, char *file_name)
+void parse_check_file(int argc, char *file)
 {
     int fd;
     char *line;
 
-    if (argc != 2 || ft_strlen(file_name) < 5 || 
-        ft_strncmp(file_name + ft_strlen(file_name) - 4, ".cub", 4) != 0)
-        print_error("Error\nInvalid arguments, file name, or extension.\n"); // será exit_error ou print_error? até este momento ainda não aloquei memória nenhuma, logo deveria ser print_error.
+    if (argc != 2 || ft_strlen(file) < 5 || 
+        ft_strncmp(file + ft_strlen(file) - 4, ".cub", 4) != 0)
+        exit_error(NULL, "Invalid arguments, file name, or extension.\n");
 
-    fd = open(file_name, O_RDONLY);
+    fd = open(file, O_RDONLY);
     if (fd < 0)
-        print_error("Error\nFailde to open requested file.\n"); // será exit_error ou print_error? até este momento ainda não aloquei memória nenhuma, logo deveria ser print_error.
+        exit_error(NULL, "Failed to open requested file.\n");
     while ((line = get_next_line(fd)))
     {
         for (int i = 0; line[i]; i++)
             if (!ft_isspace(line[i]))
-                return (free(line), close(fd)); // Encontrou conteúdo, termina
+            {
+                free(line);
+                close(fd);
+                return ;
+            }
         free(line);
     }
     close(fd);
-    print_error("Error\nThe file is empty or contains only whitespace.\n");
+    exit_error(NULL, "The file is empty or contains only whitespace.\n");
 }
+
 /* 
 parse_check_file (What it does):
 1. check_args, check_file_name, check_file_extension, 
@@ -93,12 +99,13 @@ parse_check_map (What it does - checks the map):
     algorithm to validate if the player is surrounded 
     by walls and therefore the map is valid.
 */ 
-void parser(t_game *game, int ac, char *file)
+//void parser(t_game *game, int ac, char *file)
+void parser(int ac, char *file)
 {   
     parse_check_file(ac, file);
-    tokenizer(game, file);
-    lexer(game->tokens_params);
-    parse_check_map(game, file);
+    //tokenizer(game, file);
+    //lexer(game->tokens_params);
+    //parse_check_map(game, file);
 }
 
 /* Like in so_long, free is done when we are exiting the game:
@@ -114,8 +121,9 @@ int	main(int ac, char **av)
     t_game game;
     
     game = (t_game){0};
-    parser (&game, ac, av[1]); 
-    init_game(&game);
-    cub3d (&game, av[1]); 
+    //parser (&game, ac, av[1]);
+    parser (ac, av[1]);
+    //init_game(&game);
+    //cub3d (&game, av[1]); 
     return (0);
 }

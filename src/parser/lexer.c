@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 18:42:01 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/30 12:00:10 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/11/30 17:39:23 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,9 @@ int parse_color (char *line, int *rgb)
 void parse_check_assign_colors (t_game *game, char *token)
 {
     int rgb[3];
-
+    
+    game->ceiling_color = 0;
+    game->floor_color = 0;
     if (!parse_color(token, rgb))
         exit_error(game, "Error\nInvalid color format.\n");
     if (*token == 'C') 
@@ -119,8 +121,6 @@ void parse_check_assign_colors (t_game *game, char *token)
         game->floor_color = (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
     }
 }
-
-
 
 /*
 1. Verifies duplicates.
@@ -153,7 +153,7 @@ void lexer(t_game *game)
 {
     int i;
 
-    i = 0;
+    i = -1;
     while (game->tokens_params[i++])
     {
         if (ft_strncmp(game->tokens_params[i], "NO ", 3) == 0)
