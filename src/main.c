@@ -1,0 +1,121 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/20 12:08:01 by joaosilva         #+#    #+#             */
+/*   Updated: 2024/11/30 11:22:51 by joaosilva        ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../include/cub3d.h"
+
+// game loops - raycasting loop and game loop.
+void cub3d(t_game *game, char *file)
+{   
+    raycasting(&game);
+    mlx_hook(game->win, 2, 1L << 0, &key_press, &game);
+    mlx_hook(game->win, 3, 1L << 1, &key_release, &game);
+    mlx_hook(game->win, 17, 1L << 17, exit_esc, &game);
+    mlx_loop_hook(game->mlx, &raycasting, &game);
+    mlx_loop(game->mlx);
+}
+
+/* 
+Instead of ft_bzero(game, sizeof(t_game)); 
+I could also use memset or calloc or just game = (t_game){0};
+*/
+static void	init_game(t_game *game)
+{ 
+    setup_game(game);
+    setup_mlx(game);
+    setup_textures(game);
+}
+
+/* 
+It checks all in one in the same function:
+1. check_args
+2. check_file_name
+3. check_file_extension
+4. check_file_open
+5. check_empty_file
+*/
+void parse_check_file(int argc, char *file_name)
+{
+    int fd;
+    char *line;
+
+    if (argc != 2 || ft_strlen(file_name) < 5 || 
+        ft_strncmp(file_name + ft_strlen(file_name) - 4, ".cub", 4) != 0)
+        print_error("Error\nInvalid arguments, file name, or extension.\n"); // será exit_error ou print_error? até este momento ainda não aloquei memória nenhuma, logo deveria ser print_error.
+
+    fd = open(file_name, O_RDONLY);
+    if (fd < 0)
+        print_error("Error\nFailde to open requested file.\n"); // será exit_error ou print_error? até este momento ainda não aloquei memória nenhuma, logo deveria ser print_error.
+    while ((line = get_next_line(fd)))
+    {
+        for (int i = 0; line[i]; i++)
+            if (!ft_isspace(line[i]))
+                return (free(line), close(fd)); // Encontrou conteúdo, termina
+        free(line);
+    }
+    close(fd);
+    print_error("Error\nThe file is empty or contains only whitespace.\n");
+}
+/* 
+parse_check_file (What it does):
+1. check_args, check_file_name, check_file_extension, 
+check_file_open, check_empty_file: all in one in the same function.
+
+Tokenizer (What it does - separates in tokens, 
+that are smaller parts of the file):
+1. It divides the file into smaller tokens: 
+    tokens_params (parameters file) and map_grid (map). 
+2. It takes off spaces at the beginning, 
+    at the end (such as trim) as also 
+    at the middle (in between) the tokens_params. 
+3. Deliver the tokens_params "cleaned" to 
+    the lexer_assign and the map_grid "cleaned" 
+    to the map_check_load.
+
+Lexer (What it does - checks/validate the tokens 
+and decides what to do with them/assigns them):
+1. It checks the textures and colors of the 
+    tokens_params to check if they are valid.
+2. It assigns the textures and colors to the game struct.
+
+parse_check_map (What it does - checks the map):
+1. It checks the map characters to see if they are valid.
+2. It sets the spawn point of the player in the map.
+3. It checks the walls of the map using the floodfill 
+    algorithm to validate if the player is surrounded 
+    by walls and therefore the map is valid.
+*/ 
+void parser(t_game *game, int ac, char *file)
+{   
+    parse_check_file(ac, file);
+    tokenizer(game, file);
+    lexer(game->tokens_params);
+    parse_check_map(game, file);
+}
+
+/* Like in so_long, free is done when we are exiting the game:
+... at so_long that happen when we press ESC or X (close window)
+... or when we finish the game (collect all collectibles) 
+... and go to the exit door.
+At cub3d that happen only when we press ESC or X (close window).
+We don´t have exit door (games keeps running), so we can 
+.. free everything in exit_esc function.
+*/
+int	main(int ac, char **av)
+{
+    t_game game;
+    
+    game = (t_game){0};
+    parser (&game, ac, av[1]); 
+    init_game(&game);
+    cub3d (&game, av[1]); 
+    return (0);
+}
