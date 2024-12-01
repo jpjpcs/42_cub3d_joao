@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 12:08:01 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/12/01 01:29:07 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/12/01 19:36:46 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void parser(t_game *game, int ac, char *file)
 {   
     parse_check_file(ac, file);
     tokenizer(game, file); 
-    //lexer(game->tokens_params);
+    //lexer(game);
     //parse_check_map(game, file);
 }
 
