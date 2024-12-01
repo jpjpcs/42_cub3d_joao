@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 16:01:22 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/30 19:12:53 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/12/01 04:18:42 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ int	exit_game(t_game *game, char *msg)
 
 void	exit_error(t_game *game, char *msg)
 {
-	ft_putendl_fd("\nError", 2);
+	ft_putendl_fd("\nError: ", 2);
 	ft_putendl_fd(msg, 2);
 	free_game(game);
 	exit(EXIT_FAILURE);

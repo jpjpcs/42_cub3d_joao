@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 12:08:01 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/30 19:26:39 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/12/01 01:29:07 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,11 +99,10 @@ parse_check_map (What it does - checks the map):
     algorithm to validate if the player is surrounded 
     by walls and therefore the map is valid.
 */ 
-//void parser(t_game *game, int ac, char *file)
-void parser(int ac, char *file)
+void parser(t_game *game, int ac, char *file)
 {   
     parse_check_file(ac, file);
-    //tokenizer(game, file);
+    tokenizer(game, file); 
     //lexer(game->tokens_params);
     //parse_check_map(game, file);
 }
@@ -121,8 +120,7 @@ int	main(int ac, char **av)
     t_game game;
     
     game = (t_game){0};
-    //parser (&game, ac, av[1]);
-    parser (ac, av[1]);
+    parser (&game, ac, av[1]);
     //init_game(&game);
     //cub3d (&game, av[1]); 
     return (0);

@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:56:06 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/11/30 19:18:30 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/12/01 04:31:53 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,26 +72,37 @@ the map has started.
 3. If the map has started, add the line to the map (map.grid).
 4. If the map hasn't started, add the line to the tokens_params.
 */
-void process_line(t_game *game, char *line, int *params_index)
-{
-    char * new_line;
-    char * old_map_grid;
+void process_line(t_game *game, char *line, int *tokens_index)
+{  
+    char *trimmed_line = NULL;
+    char *old_map_grid = NULL;
+    char *tmp_map_grid = ft_strdup("");
     
-    new_line = ft_strtrim(line, " ");
-    if (!game->map_started && is_line_empty(new_line))
+    trimmed_line = ft_strtrim(line, " ");
+    if (!trimmed_line)
+        exit_error(game, "Error\nMemory allocation failed in ft_strtrim.");
+    if (!game->map_started && is_line_empty(trimmed_line))
+    {   
+        free(trimmed_line);
         return;
-
-    if (!game->map_started && ft_strchr_any(new_line, "10"))
+    }
+    if (!game->map_started && ft_strchr("NSEWCF", trimmed_line[0])) 
+        game->tokens_params[(*tokens_index)++] = ft_strdup(trim_spaces(trimmed_line));
+    if (!game->map_started && ft_strchr("10", trimmed_line[0]))
         game->map_started = 1;
-    old_map_grid = game->tmp_map_grid;
     if (game->map_started)
     {
-        game->tmp_map_grid = ft_strjoin(old_map_grid, line);
-        free(old_map_grid);
-        game->map.rows++;    
+        old_map_grid = tmp_map_grid;
+        tmp_map_grid = ft_strjoin(tmp_map_grid, line);
+        if(old_map_grid)
+            free(old_map_grid);
+        if (!tmp_map_grid)
+            exit_error(game, "Error\nMemory allocation failed in ft_strjoin.");
+        game->tmp_map_grid = tmp_map_grid;
+        game->map.rows++;
     }
-    else
-        game->tokens_params[(*params_index)++] = strdup(trim_spaces(line));     
+    //printf("%d ", game->map.rows + 1); 
+    free(trimmed_line);
 }
 
 /*
@@ -111,27 +122,23 @@ void split_file(t_game *game, char *file)
 {
     int fd;
     char *line;
-    int params_index;
-
-    params_index = 0;
-    game->tmp_map_grid = NULL;
+    int tokens_index;
+    
+    //game->map_started = 0;
+    tokens_index = 0;
     fd = open(file, O_RDONLY);
     if (fd == -1)
         exit_error(game, "Couldn't open requested file.");
-    for (int i = 0; i < 6; i++)
-        game->tokens_params[i] = NULL;
     while ((line = get_next_line(fd)))
     {
-        process_line(game, line, &params_index);
+        //printf("Linha lida: %s\n", line);
+        process_line(game, line, &tokens_index);
         free(line);
     }
-    game->map.grid = ft_split(game->tmp_map_grid, '\n');
-    free(game->tmp_map_grid);
-    if (!game->map.grid)
-        exit_error(game, "Error\nFailed to allocate memory for map.\n");
-    close(fd);
+    game->tokens_params[tokens_index] = NULL;
     if (!game->map_started)
         exit_error(game, "Error\nMap not found.\n");
+    close(fd);
 }
 
 /*
@@ -151,12 +158,29 @@ void tokenizer (t_game *game, char *file)
 {
     int num_params;
     int count;
+    int i = 0;
 
     num_params = 0;
     count = 0;
+    
+    game->tokens_params = malloc(sizeof(char *) * 6);
+    if (!game->tokens_params)
+        exit_error(game, "Error\nMemory allocation failed for tokens_params.\n");
+    /*while (game->tokens_params[num_params++])  
+        game->tokens_params[num_params] = NULL;  */  
     split_file(game, file);
-    while (game->tokens_params[num_params++])  
+    i = 0;
+    while (game->tokens_params[i])
+        printf("Tokens: %s\n", game->tokens_params[i++]);
+    i = 0;
+   while (game->tokens_params[i])  
+    {
         count++;
+        i++;
+    }
     if (count != 6)
-        exit_error(game, "Error\nInvalid number of parameters.\n");
+        exit_error(game, "Invalid number of parameters.\n");
+    // i = 0;
+   // while (game->map.grid[i])
+     //   printf("Mapa: %s\n", game->map.grid[i++]);
 }
