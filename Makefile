@@ -6,7 +6,7 @@
 #    By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/23 20:32:02 by joaosilva         #+#    #+#              #
-#    Updated: 2024/11/30 19:08:28 by joaosilva        ###   ########.fr        #
+#    Updated: 2024/12/01 18:13:47 by joaosilva        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ NAME = cub3d
 # Other Variables
 CC = cc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror #-O3 #-g #-fsanitize=address #-pthread ead #-fsanitize=add
+CFLAGS = -Wall -Wextra -Werror -g #-O3 #-g #-fsanitize=address #-pthread ead #-fsanitize=add
 INCLUDE = -I cub3d/include
 
 ############  Source files - Sources to objects ###########

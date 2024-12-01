@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 16:01:22 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/12/01 04:18:42 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/12/01 17:16:35 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ static void	free_textures(t_game *game)
 		mlx_destroy_image(game->mlx, game->img_player.img); */
 }
 
-void free_map_and_tokens(t_game *game)
+void free_map(t_game *game)
 {
-    int i;
+	int i;
 
     i = 0;
 	if (game->map.grid)
@@ -53,21 +53,14 @@ void free_map_and_tokens(t_game *game)
 			free(game->map.grid[i++]);
 		free(game->map.grid);
 	}
-	if (game->tokens_params)
-	{
-		i = 0;
-		while (game->tokens_params[i])
-			free(game->tokens_params[i++]);
-		free(game->tokens_params);
-	}
 }
 
 void	free_game(t_game *game)
 {
 	if (game)
 	{
-		if (game->map.grid || game->tokens_params)
-			free_map_and_tokens(game);
+		if (game->map.grid)
+			free_map(game);
 		free_textures(game);
 		if (game->mlx && game->win)
 			mlx_destroy_window(game->mlx, game->win);
