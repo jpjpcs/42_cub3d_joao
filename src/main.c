@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 12:08:01 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/12/01 19:36:46 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/12/02 03:36:36 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,16 @@ void parse_check_file(int argc, char *file)
     exit_error(NULL, "The file is empty or contains only whitespace.\n");
 }
 
+void    print_game_atributes(t_game *game)
+{
+    printf("Ceiling color: %d\n", game->ceiling_color);
+    printf("Floor color: %d\n", game->floor_color);
+    printf("NO texture: %s\n", game->textures[0].path);
+    printf("SO texture: %s\n", game->textures[1].path);
+    printf("WE texture: %s\n", game->textures[2].path);
+    printf("EA texture: %s\n", game->textures[3].path);
+}
+
 /* 
 parse_check_file (What it does):
 1. check_args, check_file_name, check_file_extension, 
@@ -103,11 +113,18 @@ void parser(t_game *game, int ac, char *file)
 {   
     parse_check_file(ac, file);
     tokenizer(game, file); 
-    //lexer(game);
-    //parse_check_map(game, file);
+    lexer(game);
+    print_game_atributes(game);
+    parse_check_map(game);
 }
 
-/* Like in so_long, free is done when we are exiting the game:
+/*
+1 - Initializes the game struct to zero(all elements).
+2 - Parses the file looking for the map and the parameters.
+3 - Inits mlx and the textures.
+4 - Starts the game loop: the raycasting loop and the game loop. 
+5 - At the end, like in so_long, free is done when 
+.. we are exiting the game:
 ... at so_long that happen when we press ESC or X (close window)
 ... or when we finish the game (collect all collectibles) 
 ... and go to the exit door.
@@ -118,10 +135,12 @@ We don´t have exit door (games keeps running), so we can
 int	main(int ac, char **av)
 {
     t_game game;
-    
+
     game = (t_game){0};
+    game.ceiling_color = -1;
+    game.floor_color = -1;
     parser (&game, ac, av[1]);
     //init_game(&game);
-    //cub3d (&game, av[1]); 
+    //cub3d (&game, av[1]);
     return (0);
 }

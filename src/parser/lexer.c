@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 18:42:01 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/12/01 19:35:01 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/12/02 00:31:15 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ EA ./textures/E.xpm
 1e0000000000001k1
 1111111111111111
 
-check_textures: 
+check_textures:
 Validates if the path of the textures is right:
-1. Starts with NO(space), SO(space), 
+1. Starts with NO(space), SO(space),
 .. EA(space), or WE(space) and ends with .xpm.
 
 check_colors:
@@ -52,6 +52,26 @@ check_map:
     - If it is between 0 and 255.
 4. If it is valid, it assigns the RGB to the array.
 5. If it is not valid, it frees the split and returns 0.
+// parse_check_assign_textures
+1. Verifies duplicates.
+2. Verifies if the path is valid.
+3. Verifies if the file can be opened.
+4. Assigns the texture.
+
+void parse_check_assign_textures(t_game *game, const char *path, int texture_index)
+{
+    int fd;
+    
+    if (game->textures[texture_index].path != NULL)
+        exit_error(game, "Error\nDuplicate texture assignment.\n");
+    if (!ft_strnstr(path, ".xpm", ft_strlen(path)))
+        exit_error(game, "Error\nInvalid texture file (must be .xpm).\n");
+    fd = open(path, O_RDONLY);
+    if (fd == -1)
+        exit_error(game, "Error\nCannot open texture file.\n");
+    close(fd);
+    game->textures[texture_index].path = ft_strdup(path);
+}
 */
 
 void ft_free_split(char **split)
@@ -76,7 +96,7 @@ int parse_color (char *line, int *rgb)
     split = ft_split(line, ',');
     if (!split)
         return (0);
-    while (split[i]) 
+    while (split[i])
     {
         if (!ft_isdigit(split[i][0]) || ft_strlen(split[i]) > 3)
         {
@@ -84,7 +104,7 @@ int parse_color (char *line, int *rgb)
             return (0);
         }
         rgb[i] = ft_atoi(split[i]);
-        if (rgb[i] < 0 || rgb[i] > 255) 
+        if (rgb[i] < 0 || rgb[i] > 255)
         {
             ft_free_split(split);
             return (0);
@@ -100,53 +120,31 @@ int parse_color (char *line, int *rgb)
 2. Verifies if the color is already assigned.
 3. Assigns the color.
 */
-void parse_check_assign_colors (t_game *game, char *token)
+void parse_check_assign_colors (t_game *game, char *token, char c)
 {
     int rgb[3];
-    
-    game->ceiling_color = 0;
-    game->floor_color = 0;
+
     if (!parse_color(token, rgb))
-        exit_error(game, "Error\nInvalid color format.\n");
-    if (*token == 'C') 
+        exit_error(game, "Invalid color format.\n");
+    if (c == 'C')
     {
         if (game->ceiling_color != -1)
-            exit_error(game, "Error\nCeiling color is already assigned.\n");
+            exit_error(game, "Ceiling color is already assigned.\n");
         game->ceiling_color = (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-    } 
-    else if (*token == 'F') 
+    }
+    else if (c == 'F')
     {
         if (game->floor_color != -1)
-            exit_error(game, "Error\nFloor color is already assigned.\n");
+            exit_error(game, "Floor color is already assigned.\n");
         game->floor_color = (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
     }
 }
 
 /*
-1. Verifies duplicates.
-2. Verifies if the path is valid.
-3. Verifies if the file can be opened.
-4. Assigns the texture.
-*/
-void parse_check_assign_textures(t_game *game, const char *path, int texture_index)
-{
-    int fd;
-    
-    if (game->textures[texture_index].path != NULL)
-        exit_error(game, "Error\nDuplicate texture assignment.\n");
-    if (!ft_strnstr(path, ".xpm", ft_strlen(path)))
-        exit_error(game, "Error\nInvalid texture file (must be .xpm).\n");
-    fd = open(path, O_RDONLY);
-    if (fd == -1)
-        exit_error(game, "Error\nCannot open texture file.\n");
-    close(fd);
-    game->textures[texture_index].path = ft_strdup(path);
-}
-/*
 1. Assigns all the textures and colors to the game struct.
-2. Each function verifies if the assignment is valid, 
+2. Each function verifies if the assignment is valid,
 and if the assignment is not valid, it exits the program.
-3. If all the assignments are valid, it continues and 
+3. If all the assignments are valid, it continues and
 gives free to the tokens_params.
 */
 void lexer(t_game *game)
@@ -154,26 +152,22 @@ void lexer(t_game *game)
     int i;
 
     i = -1;
-    while (game->tokens_params[i++])
+    while (game->tokens_params[++i])
     {
+        printf("Token: %s\n", game->tokens_params[i]);
         if (ft_strncmp(game->tokens_params[i], "NO ", 3) == 0)
-            parse_check_assign_textures(game, game->tokens_params[i] + 3, 0);
+            game->textures[0].path = &(game->tokens_params[i][3]);
         else if (ft_strncmp(game->tokens_params[i], "SO ", 3) == 0)
-            parse_check_assign_textures(game, game->tokens_params[i] + 3, 1);
+            game->textures[1].path = &(game->tokens_params[i][3]);
         else if (ft_strncmp(game->tokens_params[i], "EA ", 3) == 0)
-            parse_check_assign_textures(game, game->tokens_params[i] + 3, 2);
+            game->textures[2].path = &(game->tokens_params[i][3]);
         else if (ft_strncmp(game->tokens_params[i], "WE ", 3) == 0)
-            parse_check_assign_textures(game, game->tokens_params[i] + 3, 3);
+            game->textures[3].path = &(game->tokens_params[i][3]);
         else if (ft_strncmp(game->tokens_params[i], "F ", 2) == 0)
-            parse_check_assign_colors(game, game->tokens_params[i] + 2);
+            parse_check_assign_colors(game, game->tokens_params[i] + 2, 'F');
         else if (ft_strncmp(game->tokens_params[i], "C ", 2) == 0)
-            parse_check_assign_colors(game, game->tokens_params[i] + 2);
+            parse_check_assign_colors(game, game->tokens_params[i] + 2, 'C');
         else
-            exit_error(game, "Error\nUnknown parameter.\n");
-    }
-    for (int j = 0; j < 4; j++)
-    {
-        if (game->textures[j].path == NULL)
-            exit_error(game, "Error\nMissing texture.\n");
+            exit_error(game, "Unknown parameter.\n");
     }
 }

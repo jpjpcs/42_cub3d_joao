@@ -6,7 +6,7 @@
 /*   By: joaosilva <joaosilva@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 11:45:17 by joaosilva         #+#    #+#             */
-/*   Updated: 2024/12/01 17:12:01 by joaosilva        ###   ########.fr       */
+/*   Updated: 2024/12/02 03:35:49 by joaosilva        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,7 @@ typedef struct s_game
 
     // Game Map (2D representation)
     t_map map; // The Map of the game: map structure. Contains the map data and its dimensions (width and height).
-    int map_started; // Flag to check if we have reached the map content. If the map has started.
-    char *tokens_params[6]; // Array with the splited map parameters.
+    char *tokens_params[7]; // Array with the splited map parameters.
     char *tmp_map_grid; // Temporary map grid to store the map data before it´s copied to the map structure.
     // Players properties
     t_player player; // Player´s information: position, direction, etc
@@ -137,7 +136,7 @@ typedef struct s_game
 //Parser
 void tokenizer (t_game *game, char *file);
 void lexer(t_game *game);
-void parse_check_map(t_game *game, char *file);
+void parse_check_map(t_game *game);
 
 //Init
 void setup_game(t_game *game);
